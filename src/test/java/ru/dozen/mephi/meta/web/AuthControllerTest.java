@@ -1,27 +1,80 @@
 package ru.dozen.mephi.meta.web;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.dozen.mephi.meta.AbstractIntegrationTest;
+import ru.dozen.mephi.meta.domain.User;
+import ru.dozen.mephi.meta.domain.enums.UserState;
 import ru.dozen.mephi.meta.security.AuthRequest;
+import ru.dozen.mephi.meta.security.JwtTokenUtil;
 
 class AuthControllerTest extends AbstractIntegrationTest {
 
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @BeforeEach
+    void initDatabase() {
+        usersRepository.save(User.builder()
+                .login("user")
+                .passwordHash(encoder.encode("password"))
+                .userState(UserState.ACTIVE)
+                .build()
+        );
+    }
+
     @Test
     void testAuthenticate() throws Exception {
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setUsername("user");
-        authRequest.setPassword("password");
+        AuthRequest authRequest = AuthRequest.builder()
+                .username("user")
+                .password("password")
+                .build();
 
-        var res = mockMvc.perform(post("/authenticate")
+        var data = mockMvc.perform(post("/auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(res);
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        assertEquals("user", jwtTokenUtil.extractUsername(data));
+
+        mockMvc.perform(get("/users/user"))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/users/user").header("Authorization", "Bearer " + data))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testAuthenticate_InvalidUser() throws Exception {
+        AuthRequest authRequest = AuthRequest.builder()
+                .username("ivan")
+                .password("password")
+                .build();
+
+        mockMvc.perform(post("/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testAuthenticate_InvalidPass() throws Exception {
+        AuthRequest authRequest = AuthRequest.builder()
+                .username("user")
+                .password("qwerty123")
+                .build();
+
+        mockMvc.perform(post("/auth")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isForbidden());
     }
 }

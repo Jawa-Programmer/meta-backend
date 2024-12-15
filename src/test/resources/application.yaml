@@ -1,10 +1,10 @@
-spring:
-  application:
-    name: META
-  jpa:
-    hibernate:
-      ddl-auto: create-drop # Опции: validate, update, create, create-drop
-    show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+#spring:
+#  application:
+#    name: META
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop # Опции: validate, update, create, create-drop
+#    show-sql: false
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
