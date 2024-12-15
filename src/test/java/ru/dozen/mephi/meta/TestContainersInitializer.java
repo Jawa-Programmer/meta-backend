@@ -1,6 +1,6 @@
 package ru.dozen.mephi.meta;
 
-import static ru.dozen.mephi.meta.MetaApplicationTests.postgresContainer;
+import static ru.dozen.mephi.meta.AbstractTest.postgresContainer;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;

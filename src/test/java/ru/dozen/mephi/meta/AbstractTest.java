@@ -1,6 +1,7 @@
 package ru.dozen.mephi.meta;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -10,7 +11,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @ContextConfiguration(initializers = TestContainersInitializer.class)
-class MetaApplicationTests {
+class AbstractTest {
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @Container
     public static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:15.3")
@@ -18,8 +22,5 @@ class MetaApplicationTests {
             .withUsername("test")
             .withPassword("test");
 
-    @Test
-    void contextLoads() {
-    }
 
 }
