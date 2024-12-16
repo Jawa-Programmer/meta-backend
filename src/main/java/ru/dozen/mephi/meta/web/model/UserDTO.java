@@ -1,9 +1,11 @@
 package ru.dozen.mephi.meta.web.model;
 
+import java.util.EnumSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.dozen.mephi.meta.domain.enums.SystemRole;
 import ru.dozen.mephi.meta.domain.enums.UserState;
 
 @Data
@@ -16,5 +18,6 @@ public class UserDTO {
     private String login;
     private String fio;
     private UserState state;
+    private EnumSet<SystemRole> systemRoles;
 
 }

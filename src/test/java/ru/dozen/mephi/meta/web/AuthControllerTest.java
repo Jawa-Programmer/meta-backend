@@ -5,12 +5,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.EnumSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import ru.dozen.mephi.meta.AbstractIntegrationTest;
 import ru.dozen.mephi.meta.domain.User;
+import ru.dozen.mephi.meta.domain.enums.SystemRole;
 import ru.dozen.mephi.meta.domain.enums.UserState;
 import ru.dozen.mephi.meta.security.AuthRequest;
 import ru.dozen.mephi.meta.security.JwtTokenUtil;
@@ -27,6 +29,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
                 .login("user")
                 .passwordHash(encoder.encode("password"))
                 .userState(UserState.ACTIVE)
+                .systemRoles(EnumSet.of(SystemRole.USER))
                 .build()
         );
     }

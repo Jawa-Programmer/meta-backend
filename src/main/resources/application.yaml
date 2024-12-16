@@ -2,8 +2,8 @@ spring:
   application:
     name: META
   datasource:
-    url: some-url
-    username: postgres
+    url: jdbc:postgresql://${POSTGRES_IP}:5432/meta_db
+    username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
 

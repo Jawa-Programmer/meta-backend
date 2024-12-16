@@ -2,6 +2,7 @@ package ru.dozen.mephi.meta.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,13 +12,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.EnumSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.dozen.mephi.meta.domain.enums.SystemRole;
 import ru.dozen.mephi.meta.domain.enums.UserState;
+import ru.dozen.mephi.meta.domain.util.SystemRolesConverter;
 
 @Getter
 @Setter
@@ -56,5 +60,9 @@ public class User {
 
     @ManyToMany(mappedBy = "watchers")
     private List<Task> watchedTasks;
+
+    @Column(name = "system_role", nullable = false)
+    @Convert(converter = SystemRolesConverter.class)
+    private EnumSet<SystemRole> systemRoles;
 
 }
