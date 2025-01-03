@@ -23,6 +23,13 @@
     <mapstruct.version>1.6.3</mapstruct.version>
     <org.springdoc.version>2.7.0</org.springdoc.version>
     <org.zalando.version>0.27.1</org.zalando.version>
+
+    <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
+    <!-- DEPLOY SETTINGS -->
+    <deploy.username>root</deploy.username>
+    <deploy.host>${META_BACKEND_IP}</deploy.host>
+    <deploy.path>~/meta-backend/service.jar</deploy.path>
+    <deploy.service>meta-backend</deploy.service>
   </properties>
   <dependencies>
     <!-- Spring -->
@@ -164,6 +171,43 @@
             </exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${exec-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>2</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>scp</executable>
+              <arguments>
+                <argument>${project.build.finalName}.jar</argument>
+                <argument>${deploy.username}@${deploy.host}:${deploy.path}</argument>
+              </arguments>
+              <workingDirectory>${project.build.directory}</workingDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>3</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>ssh</executable>
+              <arguments>
+                <argument>${deploy.username}@${deploy.host}</argument>
+                <argument>systemctl restart ${deploy.service}</argument>
+              </arguments>
+              <workingDirectory>${project.build.directory}</workingDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
