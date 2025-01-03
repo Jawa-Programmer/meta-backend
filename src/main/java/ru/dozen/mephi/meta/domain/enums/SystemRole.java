@@ -9,6 +9,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SystemRole {
-    USER("Пользователь"), ADMIN("Администратор");
+    USER("Пользователь"), ADMIN("Администратор"), SUPERUSER("Супер-пользовать");
     private final String title;
 }

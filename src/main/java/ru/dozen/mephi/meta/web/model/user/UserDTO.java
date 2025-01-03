@@ -1,4 +1,4 @@
-package ru.dozen.mephi.meta.web.model;
+package ru.dozen.mephi.meta.web.model.user;
 
 import java.util.EnumSet;
 import lombok.AllArgsConstructor;
@@ -17,6 +17,7 @@ public class UserDTO {
     private Long id;
     private String login;
     private String fio;
+    private String picturePath;
     private UserState state;
     private EnumSet<SystemRole> systemRoles;
 

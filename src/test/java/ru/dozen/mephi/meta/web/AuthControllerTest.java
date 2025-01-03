@@ -49,7 +49,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
         assertEquals("user", jwtTokenUtil.extractUsername(data));
 
         mockMvc.perform(get("/users/user"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/users/user").header("Authorization", "Bearer " + data))
                 .andExpect(status().isOk());
@@ -65,7 +65,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -78,6 +78,6 @@ class AuthControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/auth")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 }
