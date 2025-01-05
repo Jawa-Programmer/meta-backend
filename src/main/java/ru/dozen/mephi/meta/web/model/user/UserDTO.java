@@ -1,5 +1,6 @@
 package ru.dozen.mephi.meta.web.model.user;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import ru.dozen.mephi.meta.domain.enums.UserState;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDTO implements Serializable {
 
     private Long id;
     private String login;

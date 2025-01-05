@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
+import java.io.Serializable;
 import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class ComparableFilter<T extends Comparable<T>> extends Filter<T> {
+public class ComparableFilter<T extends Comparable<T> & Serializable> extends Filter<T> {
 
     private T lt;
     private T gt;
@@ -42,23 +43,24 @@ public class ComparableFilter<T extends Comparable<T>> extends Filter<T> {
 
 
     @Override
-    public <A> Specification<A> toSpecification(final String attributeName) {
-        Specification<A> s = super.toSpecification(attributeName);
+    public <A> Specification<A> toSpecification(final String attributePath) {
+        Specification<A> s = super.toSpecification(attributePath);
         if (s != null) {
             return s;
         }
+        var pf = this.<A, T>pathFunction(attributePath);
         Specification<A> less = null;
         if (lt != null) {
-            less = lt(root -> root.get(attributeName), lt);
+            less = lt(pf, lt);
         } else if (lte != null) {
-            less = lte(root -> root.get(attributeName), lte);
+            less = lte(pf, lte);
         }
 
         Specification<A> greater = null;
         if (gt != null) {
-            greater = gt(root -> root.get(attributeName), gt);
+            greater = gt(pf, gt);
         } else if (gte != null) {
-            greater = gte(root -> root.get(attributeName), gte);
+            greater = gte(pf, gte);
         }
 
         if (less != null && greater != null) {

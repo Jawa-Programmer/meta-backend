@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -91,7 +92,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
     public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequestDTO rq) {
-        return ResponseEntity.ok(usersService.registerNewUser(rq));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usersService.registerNewUser(rq));
     }
 
 

@@ -1,5 +1,6 @@
 package ru.dozen.mephi.meta.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class FilterUtils {
         return (Filter) getter.invoke(obj);
     }
 
-    private <T, V> Specification<T> toSpecification(Filter<V> f, Class<?> clazz, Method getter) {
+    private <T, V extends Serializable> Specification<T> toSpecification(Filter<V> f, Class<?> clazz, Method getter) {
         if (f != null) {
             return f.toSpecification(getName(clazz, getter));
         }
@@ -51,5 +52,21 @@ public class FilterUtils {
                 .filter(Objects::nonNull)
                 .reduce(Specification::and)
                 .orElse(null);
+    }
+
+    public <T extends Serializable, E> Specification<E> eq(String fieldName, T value) {
+        return new Filter<T>().setEq(value).toSpecification(fieldName);
+    }
+
+    public <T extends Serializable, E> Specification<E> neq(String fieldName, T value) {
+        return new Filter<T>().setNeq(value).toSpecification(fieldName);
+    }
+
+    public <T extends Serializable, E> Specification<E> isNull(String fieldName) {
+        return new Filter<T>().setIsNull(true).toSpecification(fieldName);
+    }
+
+    public <T extends Serializable, E> Specification<E> isNotNull(String fieldName) {
+        return new Filter<T>().setIsNull(false).toSpecification(fieldName);
     }
 }

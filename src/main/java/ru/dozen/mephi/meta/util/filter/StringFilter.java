@@ -48,28 +48,29 @@ public class StringFilter extends Filter<String> {
     }
 
     @Override
-    public <A> Specification<A> toSpecification(final String attributeName) {
-        Specification<A> s = super.toSpecification(attributeName);
+    public <A> Specification<A> toSpecification(final String attributePath) {
+        Specification<A> s = super.toSpecification(attributePath);
         if (s != null) {
             return s;
         }
+        var pf = this.<A, String>pathFunction(attributePath);
         if (contains != null) {
-            s = contains(root -> root.get(attributeName), contains);
+            s = contains(pf, contains);
         }
         if (notContains != null) {
-            Specification<A> toAdd = notContains(root -> root.get(attributeName), notContains);
+            Specification<A> toAdd = notContains(pf, notContains);
             s = s == null ? toAdd : s.and(toAdd);
         }
         if (startsWith != null) {
-            Specification<A> toAdd = startsWith(root -> root.get(attributeName), startsWith);
+            Specification<A> toAdd = startsWith(pf, startsWith);
             s = s == null ? toAdd : s.and(toAdd);
         }
         if (endsWith != null) {
-            Specification<A> toAdd = endsWith(root -> root.get(attributeName), endsWith);
+            Specification<A> toAdd = endsWith(pf, endsWith);
             s = s == null ? toAdd : s.and(toAdd);
         }
         if (like != null) {
-            Specification<A> toAdd = like(root -> root.get(attributeName), like);
+            Specification<A> toAdd = like(pf, like);
             s = s == null ? toAdd : s.and(toAdd);
         }
         return s;

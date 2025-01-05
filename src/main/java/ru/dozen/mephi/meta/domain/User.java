@@ -6,12 +6,14 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import ru.dozen.mephi.meta.domain.enums.SystemRole;
 import ru.dozen.mephi.meta.domain.enums.UserState;
 import ru.dozen.mephi.meta.domain.util.SystemRolesConverter;
@@ -30,7 +34,7 @@ import ru.dozen.mephi.meta.domain.util.SystemRolesConverter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -52,10 +56,10 @@ public class User {
     @Column(name = "picture_path")
     private String picturePath;
 
-    @OneToMany(mappedBy = "director", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "director", fetch = FetchType.EAGER)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RoleRecord> roleRecords;
 
     @ManyToMany(mappedBy = "watchers")
@@ -65,4 +69,23 @@ public class User {
     @Convert(converter = SystemRolesConverter.class)
     private EnumSet<SystemRole> systemRoles;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return systemRoles;
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserState.ACTIVE.equals(userState);
+    }
 }

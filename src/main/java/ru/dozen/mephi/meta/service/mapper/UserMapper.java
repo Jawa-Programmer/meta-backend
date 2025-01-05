@@ -16,7 +16,7 @@ public interface UserMapper {
     @Mapping(source = "userState", target = "state")
     UserDTO toDto(User user);
 
-    List<UserDTO> toDto(List<User> user);
+    List<UserDTO> toDto(List<User> users);
 
     @Mapping(target = "userState", constant = "ACTIVE")
     User fromCreateRequest(CreateUserRequestDTO createUserRequestDTO);

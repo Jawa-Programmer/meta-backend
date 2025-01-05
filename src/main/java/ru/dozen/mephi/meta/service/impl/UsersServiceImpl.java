@@ -89,6 +89,13 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public List<UserDTO> searchByFilter(UserFilterDTO filter) {
         Specification<User> specification = Specification.where(FilterUtils.toSpecification(filter));
-        return userMapper.toDto(usersRepository.findAll(specification));
+        var users = usersRepository.findAll(specification);
+        var projectId = filter.getProjectId();
+        if (projectId != null) {
+            users = users.stream()
+                    .filter(u -> AuthoritiesUtils.isMemberOfProject(u, projectId))
+                    .toList();
+        }
+        return userMapper.toDto(users);
     }
 }

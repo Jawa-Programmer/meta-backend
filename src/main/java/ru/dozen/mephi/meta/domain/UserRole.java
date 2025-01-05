@@ -23,6 +23,9 @@ public class UserRole {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "role_name")
+    @Column(name = "role_name", unique = true, nullable = false)
     private String roleName;
+
+    @Column(name = "role_description")
+    private String description;
 }

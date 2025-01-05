@@ -1,5 +1,6 @@
 package ru.dozen.mephi.meta.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +14,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +28,10 @@ import ru.dozen.mephi.meta.domain.enums.TaskState;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tasks")
+@Table(
+        name = "tasks",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"key", "project_id"})
+)
 public class Task {
 
     @Id
@@ -60,8 +66,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskState taskState;
 
-    @OneToMany(mappedBy = "task")
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
 
     @ManyToMany
     @JoinTable(
@@ -69,5 +76,5 @@ public class Task {
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> watchers;
+    private List<User> watchers = new ArrayList<>();
 }

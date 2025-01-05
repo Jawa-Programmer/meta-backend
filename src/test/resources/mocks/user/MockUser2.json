@@ -1,0 +1,8 @@
+{
+  "login": "user2",
+  "passwordHash": "$2a$10$L64lbTa9FmL7DzTX0d6GjeM2Cnmupz1mbol8foYWd258lBCRSchzS",
+  "userState": "ACTIVE",
+  "systemRoles": [
+    "USER"
+  ]
+}

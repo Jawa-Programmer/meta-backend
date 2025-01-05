@@ -135,7 +135,7 @@ class UserControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rq)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.login").value(rq.getLogin()))
                 .andExpect(jsonPath("$.fio").value(rq.getFio()))
                 .andExpect(jsonPath("$.picturePath").value(rq.getPicturePath()))
@@ -160,7 +160,7 @@ class UserControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rq)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.login").value(rq.getLogin()))
                 .andExpect(jsonPath("$.fio").value(rq.getFio()))
                 .andExpect(jsonPath("$.picturePath").value(rq.getPicturePath()))
@@ -292,7 +292,7 @@ class UserControllerTest extends AbstractIntegrationTest {
                         .fio("some fio 2")
                         .passwordHash(encoder.encode("password"))
                         .userState(UserState.ACTIVE)
-                        .systemRoles(EnumSet.of(SystemRole.USER))
+                        .systemRoles(EnumSet.of(SystemRole.USER, SystemRole.ADMIN))
                         .build(),
 
                 User.builder()
@@ -300,7 +300,7 @@ class UserControllerTest extends AbstractIntegrationTest {
                         .fio("some fio 3")
                         .passwordHash(encoder.encode("password"))
                         .userState(UserState.BLOCKED)
-                        .systemRoles(EnumSet.of(SystemRole.USER))
+                        .systemRoles(EnumSet.of(SystemRole.ADMIN))
                         .build()
         ));
 

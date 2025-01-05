@@ -1,6 +1,7 @@
 package ru.dozen.mephi.meta.web.model.user;
 
 import jakarta.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.EnumSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import ru.dozen.mephi.meta.domain.enums.UserState;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserRequestDTO {
+public class UpdateUserRequestDTO implements Serializable {
 
     @NotBlank
     private String login;
