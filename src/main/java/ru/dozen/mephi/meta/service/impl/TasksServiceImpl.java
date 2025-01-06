@@ -15,6 +15,7 @@ import ru.dozen.mephi.meta.client.AutomatedTestManagementSystemClient;
 import ru.dozen.mephi.meta.domain.Comment;
 import ru.dozen.mephi.meta.domain.Task;
 import ru.dozen.mephi.meta.domain.User;
+import ru.dozen.mephi.meta.repository.ProjectsRepository;
 import ru.dozen.mephi.meta.repository.TasksRepository;
 import ru.dozen.mephi.meta.repository.UsersRepository;
 import ru.dozen.mephi.meta.service.TasksService;
@@ -37,6 +38,7 @@ public class TasksServiceImpl implements TasksService {
     private final TasksRepository tasksRepository;
     private final TaskMapper taskMapper;
     private final UsersRepository usersRepository;
+    private final ProjectsRepository projectsRepository;
     private final AutomatedTestManagementSystemClient atmsClient;
 
     private TaskDTO fillTestStatus(TaskDTO taskDTO) {
@@ -81,6 +83,8 @@ public class TasksServiceImpl implements TasksService {
             var next = tasksRepository.getMaxKey().orElse(-1) + 1;
             task.setKey("TSK-" + next);
         }
+
+        task.setProject(projectsRepository.findById(projectId).orElseThrow());
 
         return taskMapper.toDto(tasksRepository.save(task));
     }

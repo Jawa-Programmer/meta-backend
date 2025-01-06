@@ -59,7 +59,7 @@ public class Task {
     private User executor;
 
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @Column(name = "state")

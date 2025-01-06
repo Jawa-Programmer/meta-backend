@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
       relativeToChangelogFile: true
       file: 2025/01/05-01-changelog.sql
+  - include:
+      relativeToChangelogFile: true
+      file: 2025/01/06-01-changelog.sql
