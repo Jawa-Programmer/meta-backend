@@ -6,14 +6,16 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import ru.dozen.mephi.meta.domain.Project;
 import ru.dozen.mephi.meta.domain.Task;
 import ru.dozen.mephi.meta.web.model.task.CreateTaskRequestDTO;
+import ru.dozen.mephi.meta.web.model.task.ProjectShortInfoDTO;
 import ru.dozen.mephi.meta.web.model.task.TaskDTO;
 import ru.dozen.mephi.meta.web.model.task.TaskShortInfoDTO;
 import ru.dozen.mephi.meta.web.model.task.UpdateTaskRequestDTO;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        uses = {ProjectMapper.class, UserMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+        uses = {UserMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface TaskMapper {
 
     TaskDTO toDto(Task task);
@@ -30,4 +32,6 @@ public interface TaskMapper {
 
     @Mapping(target = "executor", ignore = true)
     void updateTask(@MappingTarget Task target, UpdateTaskRequestDTO source);
+
+    ProjectShortInfoDTO toProjectShortInfoDto(Project project);
 }

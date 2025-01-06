@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.dozen.mephi.meta.domain.enums.TaskState;
 import ru.dozen.mephi.meta.web.model.comment.CommentDTO;
-import ru.dozen.mephi.meta.web.model.project.ProjectDTO;
 import ru.dozen.mephi.meta.web.model.user.UserDTO;
 
 @Data
@@ -31,7 +30,7 @@ public class TaskDTO implements Serializable {
 
     private UserDTO executor;
 
-    private ProjectDTO project;
+    private ProjectShortInfoDTO project;
 
     private TaskState taskState;
 
