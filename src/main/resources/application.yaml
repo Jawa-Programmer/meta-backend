@@ -1,3 +1,11 @@
+server:
+  ssl:
+    key-store: "classpath:cert/meta.p12"
+    key-store-password: secret_store_pass
+    key-store-type: PKCS12
+    enabled: true
+    key-alias: meta
+
 spring:
   application:
     name: META
