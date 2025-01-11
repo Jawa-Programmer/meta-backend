@@ -24,8 +24,8 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private static final String CHECK_IS_PROJECT_DIRECTOR = "T(org.example.util.AuthoritiesUtils).isDirectorOfProject(principal, #projectId)";
-    private static final String CHECK_IS_MEMBER_OR_DIRECTOR = "T(org.example.util.AuthoritiesUtils).isMemberOfProject(principal, #projectId)";
+    private static final String CHECK_IS_PROJECT_DIRECTOR = "T(ru.dozen.mephi.meta.util.AuthoritiesUtils).isDirectorOfProject(principal, #projectId)";
+    private static final String CHECK_IS_MEMBER_OR_DIRECTOR = "T(ru.dozen.mephi.meta.util.AuthoritiesUtils).isMemberOfProject(principal, #projectId)";
 
     @Operation(
             description = "Получение информации о проекте по ID",
@@ -35,9 +35,9 @@ public class ProjectController {
                     @ApiResponse(responseCode = "401", description = "Не авторизован")
             }
     )
-    @GetMapping("/{id}")
-    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long id) {
-        return ResponseEntity.ok(projectService.getProject(id));
+    @GetMapping("/{projectId}")
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.getProject(projectId));
     }
 
     @Operation(
@@ -81,10 +81,10 @@ public class ProjectController {
                     @ApiResponse(responseCode = "403", description = "Нет прав")
             }
     )
-    @PutMapping("/{id}")
+    @PutMapping("/{projectId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @Valid @RequestBody CreateProjectRequestDTO request) {
-        return ResponseEntity.ok(projectService.updateProject(id, request));
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long projectId, @Valid @RequestBody CreateProjectRequestDTO request) {
+        return ResponseEntity.ok(projectService.updateProject(projectId, request));
     }
 
     @Operation(

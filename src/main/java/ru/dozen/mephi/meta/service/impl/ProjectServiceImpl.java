@@ -3,6 +3,9 @@ package ru.dozen.mephi.meta.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import ru.dozen.mephi.meta.domain.Project;
 import ru.dozen.mephi.meta.domain.RoleRecord;
 import ru.dozen.mephi.meta.domain.User;
@@ -17,13 +20,9 @@ import ru.dozen.mephi.meta.util.AuthoritiesUtils;
 import ru.dozen.mephi.meta.util.FilterUtils;
 import ru.dozen.mephi.meta.util.ProblemUtils;
 import ru.dozen.mephi.meta.web.model.project.*;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static ru.dozen.mephi.meta.util.ProblemUtils.*;
 import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
 
 @Slf4j
