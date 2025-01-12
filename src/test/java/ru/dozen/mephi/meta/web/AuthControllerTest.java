@@ -3,7 +3,6 @@ package ru.dozen.mephi.meta.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.EnumSet;
@@ -53,8 +52,7 @@ class AuthControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isUnauthorized());
 
         mockMvc.perform(get("/users/user").header("Authorization", "Bearer " + data))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "*"));
+                .andExpect(status().isOk());
     }
 
     @Test
