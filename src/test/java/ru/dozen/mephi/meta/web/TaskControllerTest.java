@@ -74,7 +74,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     void getTaskByKey() throws Exception {
-        mockMvc.perform(get("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
+        mockMvc.perform(get("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
                         .headers(auth("user1", "password")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Title"));
@@ -82,7 +82,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     void getTaskByKey_notInProject() throws Exception {
-        mockMvc.perform(get("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
+        mockMvc.perform(get("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
                         .headers(auth("user3", "password")))
                 .andExpect(status().isForbidden());
     }
@@ -96,7 +96,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .description("New Description")
                 .executor(UserDTO.builder().login("user2").build())
                 .build();
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -113,7 +113,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .description("New Description")
                 .executor(UserDTO.builder().login("user2").build())
                 .build();
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq2)))
@@ -131,7 +131,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
         var rq1 = TaskFilterDTO.builder()
                 .authorLogin(new StringFilter().setContains("use"))
                 .build();
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks/search")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks/search")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -141,7 +141,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
         var rq2 = TaskFilterDTO.builder()
                 .executorFio((StringFilter) new StringFilter().setIsNull(false))
                 .build();
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks/search")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks/search")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq2)))
@@ -154,7 +154,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
         var rq1 = TaskFilterDTO.builder()
                 .authorLogin(new StringFilter().setContains("use"))
                 .build();
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks/search-shorten")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks/search-shorten")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -168,7 +168,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .description("New Description")
                 .build();
 
-        mockMvc.perform(put("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
+        mockMvc.perform(put("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -184,7 +184,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .state(TaskState.ASSIGNED)
                 .build();
 
-        mockMvc.perform(put("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1/state")
+        mockMvc.perform(put("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1/state")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -199,7 +199,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .text("Чувак, твой код - говно")
                 .build();
 
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1/comment")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1/comment")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -215,7 +215,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .login("user2")
                 .build();
 
-        mockMvc.perform(post("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1/watcher")
+        mockMvc.perform(post("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1/watcher")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
@@ -223,7 +223,7 @@ class TaskControllerTest extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.key").value("TSK-1"))
                 .andExpect(jsonPath("$.watchers[0].login").value("user2"));
 
-        mockMvc.perform(delete("/project/" + MOCK_PROJECT_ID + "/tasks/TSK-1/watcher")
+        mockMvc.perform(delete("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1/watcher")
                         .headers(auth("user1", "password"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(rq1)))
