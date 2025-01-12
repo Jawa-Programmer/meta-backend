@@ -26,7 +26,6 @@ import ru.dozen.mephi.meta.web.model.project.CreateProjectRequestDTO;
 import ru.dozen.mephi.meta.web.model.project.ParticipantsDTO;
 import ru.dozen.mephi.meta.web.model.project.ProjectDTO;
 import ru.dozen.mephi.meta.web.model.project.ProjectFilterDTO;
-import ru.dozen.mephi.meta.web.model.project.RoleRecordDTO;
 import ru.dozen.mephi.meta.web.model.project.UpdateRoleRequestDTO;
 
 @RestController
@@ -163,7 +162,7 @@ public class ProjectController {
     )
     @PutMapping("/{projectId}/participants/role")
     @PreAuthorize(CHECK_IS_PROJECT_DIRECTOR)
-    public ResponseEntity<RoleRecordDTO> updateParticipantRole(
+    public ResponseEntity<ParticipantsDTO> updateParticipantRole(
             @PathVariable long projectId,
             @RequestBody @Valid UpdateRoleRequestDTO request
     ) {
@@ -180,7 +179,6 @@ public class ProjectController {
             }
     )
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
     public ResponseEntity<List<ProjectDTO>> searchProjects(@Valid @ParameterObject ProjectFilterDTO filter) {
         return ResponseEntity.ok(projectService.searchProjects(filter));
     }

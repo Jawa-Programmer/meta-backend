@@ -1,6 +1,9 @@
 package ru.dozen.mephi.meta.service.impl;
 
+import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
+
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,15 +18,16 @@ import ru.dozen.mephi.meta.repository.UserRolesRepository;
 import ru.dozen.mephi.meta.repository.UsersRepository;
 import ru.dozen.mephi.meta.service.ProjectService;
 import ru.dozen.mephi.meta.service.mapper.ProjectMapper;
-import ru.dozen.mephi.meta.service.mapper.RoleRecordMapper;
 import ru.dozen.mephi.meta.util.AuthoritiesUtils;
 import ru.dozen.mephi.meta.util.FilterUtils;
 import ru.dozen.mephi.meta.util.ProblemUtils;
-import ru.dozen.mephi.meta.web.model.project.*;
-
-import java.util.List;
-
-import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
+import ru.dozen.mephi.meta.web.model.project.AssignRemoveParticipantRequestDTO;
+import ru.dozen.mephi.meta.web.model.project.ChangeProjectStateRequestDTO;
+import ru.dozen.mephi.meta.web.model.project.CreateProjectRequestDTO;
+import ru.dozen.mephi.meta.web.model.project.ParticipantsDTO;
+import ru.dozen.mephi.meta.web.model.project.ProjectDTO;
+import ru.dozen.mephi.meta.web.model.project.ProjectFilterDTO;
+import ru.dozen.mephi.meta.web.model.project.UpdateRoleRequestDTO;
 
 @Slf4j
 @Service
@@ -35,7 +39,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final UsersRepository usersRepository;
     private final UserRolesRepository userRolesRepository;
     private final RoleRecordsRepository roleRecordsRepository;
-    private final RoleRecordMapper roleRecordMapper;
 
     @Override
     public ProjectDTO getProject(long id) {
@@ -160,7 +163,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         roleRecordsRepository.delete(existingRoleRecord);
 
-        projectsRepository.save(project);
+        project = projectsRepository.save(project);
 
         return project.getRoleRecords().stream()
                 .map(roleRecord -> {
@@ -177,7 +180,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public RoleRecordDTO updateParticipantRole(long projectId, UpdateRoleRequestDTO request) {
+    public ParticipantsDTO updateParticipantRole(long projectId, UpdateRoleRequestDTO request) {
         var project = projectsRepository.findById(projectId).orElseThrow(
                 () -> new EntityNotFoundException("Проект с ID " + projectId + " не найден")
         );
@@ -197,13 +200,23 @@ public class ProjectServiceImpl implements ProjectService {
 
         var updatedRoleRecord = roleRecordsRepository.save(existingRoleRecord);
 
-        return roleRecordMapper.toDto(updatedRoleRecord);
+        return new ParticipantsDTO(
+                updatedRoleRecord.getUser().getId(),
+                updatedRoleRecord.getUser().getFio(),
+                updatedRoleRecord.getUser().getLogin(),
+                updatedRoleRecord.getRole().getRoleName());
     }
 
     @Override
     public List<ProjectDTO> searchProjects(ProjectFilterDTO filter) {
         Specification<Project> specification = FilterUtils.toSpecification(filter);
         List<Project> projects = projectsRepository.findAll(specification);
+        var user = AuthoritiesUtils.getCurrentUser();
+        if (!AuthoritiesUtils.hasAnyRole(user, "ROLE_ADMIN", "ROLE_SUPERUSER")) {
+            projects = projects.stream()
+                    .filter(it -> AuthoritiesUtils.isMemberOfProject(user, it.getId()))
+                    .toList();
+        }
         return projects.stream().map(projectMapper::toDto).toList();
     }
 
