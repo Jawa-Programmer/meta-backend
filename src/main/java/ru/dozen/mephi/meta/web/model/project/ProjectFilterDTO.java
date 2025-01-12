@@ -1,9 +1,11 @@
 package ru.dozen.mephi.meta.web.model.project;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.dozen.mephi.meta.domain.enums.ProjectState;
 import ru.dozen.mephi.meta.util.filter.EntityFieldName;
 import ru.dozen.mephi.meta.util.filter.Filter;
 import ru.dozen.mephi.meta.util.filter.StringFilter;
@@ -12,11 +14,12 @@ import ru.dozen.mephi.meta.util.filter.StringFilter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectFilterDTO {
+public class ProjectFilterDTO implements Serializable {
 
     private StringFilter title;
-    private Filter<String> directorLogin;
+    @EntityFieldName("director.login")
+    private StringFilter directorLogin;
     @EntityFieldName("director.fio")
     private StringFilter directorFio;
-    private Filter<String> state;
+    private Filter<ProjectState> state;
 }

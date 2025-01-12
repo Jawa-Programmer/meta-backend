@@ -1,5 +1,6 @@
 package ru.dozen.mephi.meta.web.model.project;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParticipantsDTO {
+public class ParticipantsDTO implements Serializable {
 
     private Long userId;
     private String userName;
