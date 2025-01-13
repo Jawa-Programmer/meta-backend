@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +21,14 @@ public class AuthController {
 
     private final JwtTokenUtil jwtTokenUtil;
 
-    private final UserDetailsService userDetailsService;
 
     @PostMapping
     public ResponseEntity<String> createAuthenticationToken(@RequestBody AuthRequest authRequest) {
-        authenticationManager.authenticate(
+        var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
         );
 
-        var userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        var userDetails = (UserDetails) auth.getPrincipal();
         var result = jwtTokenUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok(result);
     }
