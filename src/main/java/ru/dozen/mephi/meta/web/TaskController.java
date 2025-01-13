@@ -30,7 +30,7 @@ import ru.dozen.mephi.meta.web.model.user.UserDTO;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects/{projectId}/tasks")
-@SecurityRequirement(name = "swagger-auth")
+@SecurityRequirement(name = "bearer-auth")
 @Tag(name = "Управление задачами")
 public class TaskController {
 

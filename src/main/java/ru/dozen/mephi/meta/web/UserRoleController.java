@@ -24,7 +24,7 @@ import ru.dozen.mephi.meta.web.model.role.UserRoleDTO;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user-roles")
-@SecurityRequirement(name = "swagger-auth")
+@SecurityRequirement(name = "bearer-auth")
 @Tag(name = "Управление ролями пользователей")
 @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
 public class UserRoleController {

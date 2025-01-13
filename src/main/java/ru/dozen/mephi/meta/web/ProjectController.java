@@ -31,7 +31,7 @@ import ru.dozen.mephi.meta.web.model.project.UpdateRoleRequestDTO;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")
-@SecurityRequirement(name = "swagger-auth")
+@SecurityRequirement(name = "bearer-auth")
 @Tag(name = "Управление проектами")
 public class ProjectController {
 

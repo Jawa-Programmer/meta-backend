@@ -1,7 +1,5 @@
 package ru.dozen.mephi.meta.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,7 +30,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**", "/api-docs.yaml").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(withDefaults())
+                //.httpBasic(withDefaults())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

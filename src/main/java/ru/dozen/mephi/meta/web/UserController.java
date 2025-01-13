@@ -27,7 +27,7 @@ import ru.dozen.mephi.meta.web.model.user.UserFilterDTO;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-@SecurityRequirement(name = "swagger-auth")
+@SecurityRequirement(name = "bearer-auth")
 @Tag(name = "Управление пользователями")
 public class UserController {
 
