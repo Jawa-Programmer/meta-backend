@@ -110,7 +110,7 @@ public class ProjectController {
             }
     )
     @GetMapping("/{projectId}/participants")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR)
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_MEMBER_OR_DIRECTOR)
     public ResponseEntity<List<ParticipantsDTO>> getParticipants(@PathVariable long projectId) {
         return ResponseEntity.ok(projectService.getParticipants(projectId));
     }
@@ -125,7 +125,7 @@ public class ProjectController {
             }
     )
     @PostMapping("/{projectId}/participants")
-    @PreAuthorize(CHECK_IS_PROJECT_DIRECTOR)
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR)
     public ResponseEntity<ProjectDTO> assignParticipant(
             @PathVariable long projectId,
             @RequestBody @Valid AssignRemoveParticipantRequestDTO request
@@ -143,7 +143,7 @@ public class ProjectController {
             }
     )
     @DeleteMapping("/{projectId}/participants")
-    @PreAuthorize(CHECK_IS_PROJECT_DIRECTOR)
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR)
     public ResponseEntity<List<ParticipantsDTO>> removeParticipant(
             @PathVariable long projectId,
             @RequestBody @Valid AssignRemoveParticipantRequestDTO request
@@ -161,7 +161,7 @@ public class ProjectController {
             }
     )
     @PutMapping("/{projectId}/participants/role")
-    @PreAuthorize(CHECK_IS_PROJECT_DIRECTOR)
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR)
     public ResponseEntity<ParticipantsDTO> updateParticipantRole(
             @PathVariable long projectId,
             @RequestBody @Valid UpdateRoleRequestDTO request
