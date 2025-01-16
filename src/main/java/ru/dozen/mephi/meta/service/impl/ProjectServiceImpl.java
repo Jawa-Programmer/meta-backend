@@ -223,7 +223,7 @@ public class ProjectServiceImpl implements ProjectService {
                     .filter(it -> AuthoritiesUtils.isMemberOfProject(user, it.getId()))
                     .toList();
         }
-        return projects.stream().map(projectMapper::toDto).sorted(Comparator.comparingLong(ProjectDTO::getId)).toList();
+        return projects.stream().map(projectMapper::toDto).sorted(Comparator.comparingLong(ProjectDTO::getId)).toList().reversed();
     }
 
     private Project getProjectById(Long id) {
