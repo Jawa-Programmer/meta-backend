@@ -17,7 +17,7 @@ import ru.dozen.mephi.meta.web.model.user.UserDTO;
 @AllArgsConstructor
 public class CreateTaskRequestDTO implements Serializable {
 
-    @Pattern(regexp = "[A-Z]{1,5}-\\d{1,4}")
+    @Pattern(regexp = "([A-Za-z]{1,5}-\\d{1,4})?")
     private String key;
 
     @NotBlank

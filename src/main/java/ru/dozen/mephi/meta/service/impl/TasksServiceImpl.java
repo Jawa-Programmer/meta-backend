@@ -83,6 +83,8 @@ public class TasksServiceImpl implements TasksService {
         if (StringUtils.isBlank(task.getKey())) {
             var next = tasksRepository.getMaxKey().orElse(-1) + 1;
             task.setKey("TSK-" + next);
+        } else {
+            task.setKey(task.getKey().toUpperCase());
         }
 
         task.setProject(projectsRepository.findById(projectId).orElseThrow());
