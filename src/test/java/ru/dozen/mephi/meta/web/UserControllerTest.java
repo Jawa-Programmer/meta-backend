@@ -233,7 +233,8 @@ class UserControllerTest extends AbstractIntegrationTest {
         final var exceptedString = objectMapper.writeValueAsString(excepted);
 
         mockMvc.perform(post("/users/login/changePassword")
-                        .content("newPassword"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"password\":\"newPassword\"}"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(exceptedString));
 

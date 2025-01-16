@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dozen.mephi.meta.service.UsersService;
+import ru.dozen.mephi.meta.web.model.user.ChangePasswordRequest;
 import ru.dozen.mephi.meta.web.model.user.CreateUserRequestDTO;
 import ru.dozen.mephi.meta.web.model.user.UpdateUserRequestDTO;
 import ru.dozen.mephi.meta.web.model.user.UserDTO;
@@ -120,7 +122,7 @@ public class UserController {
     )
     @PostMapping("/{login}/changePassword")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
-    public ResponseEntity<UserDTO> changePassword(@PathVariable String login, @RequestBody @NotBlank String password) {
-        return ResponseEntity.ok(usersService.setPassword(login, password));
+    public ResponseEntity<UserDTO> changePassword(@PathVariable String login, @RequestBody @Valid ChangePasswordRequest rq) {
+        return ResponseEntity.ok(usersService.setPassword(login, rq.getPassword()));
     }
 }
