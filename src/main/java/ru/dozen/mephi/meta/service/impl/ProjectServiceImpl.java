@@ -3,6 +3,7 @@ package ru.dozen.mephi.meta.service.impl;
 import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -222,7 +223,7 @@ public class ProjectServiceImpl implements ProjectService {
                     .filter(it -> AuthoritiesUtils.isMemberOfProject(user, it.getId()))
                     .toList();
         }
-        return projects.stream().map(projectMapper::toDto).toList();
+        return projects.stream().map(projectMapper::toDto).sorted(Comparator.comparingLong(ProjectDTO::getId)).toList();
     }
 
     private Project getProjectById(Long id) {

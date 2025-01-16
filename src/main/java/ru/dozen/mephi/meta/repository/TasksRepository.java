@@ -15,4 +15,6 @@ public interface TasksRepository extends JpaRepository<Task, Long>, JpaSpecifica
 
     @Query(value = "SELECT try_cast_int(SUBSTRING(key, 5), -1) as kvalue FROM tasks WHERE key LIKE 'TSK-%' ORDER BY kvalue DESC LIMIT 1", nativeQuery = true)
     Optional<Integer> getMaxKey();
+
+    boolean existsByKey(String key);
 }

@@ -67,7 +67,18 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public TaskDTO createTask(long projectId, CreateTaskRequestDTO rq) {
+        var key = rq.getKey();
+        if (StringUtils.isBlank(key)) {
+            var next = tasksRepository.getMaxKey().orElse(-1) + 1;
+            key = "TSK-" + next;
+        } else {
+            key = key.toUpperCase();
+            if (tasksRepository.existsByKey(key)) {
+                throw badRequest("Key " + key + " already exists");
+            }
+        }
         Task task = taskMapper.fromCreateRequest(rq);
+        task.setKey(key);
         task.setAuthor(AuthoritiesUtils.getCurrentUser());
 
         var executorDto = rq.getExecutor();
@@ -79,13 +90,6 @@ public class TasksServiceImpl implements TasksService {
                 .map(UserDTO::getLogin)
                 .map(login -> getUserIfMemberOfProject(projectId, login))
                 .toList()).ifPresent(task::setWatchers);
-
-        if (StringUtils.isBlank(task.getKey())) {
-            var next = tasksRepository.getMaxKey().orElse(-1) + 1;
-            task.setKey("TSK-" + next);
-        } else {
-            task.setKey(task.getKey().toUpperCase());
-        }
 
         task.setProject(projectsRepository.findById(projectId).orElseThrow());
 
