@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -38,7 +39,8 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "key", length = 10)
+    @Column(name = "key", length = 10, nullable = false)
+    @Pattern(regexp = "[A-Z]{1,5}-\\d{1,4}")
     private String key;
 
     @Column(name = "title")

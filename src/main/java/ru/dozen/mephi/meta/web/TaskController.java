@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -83,7 +84,7 @@ public class TaskController {
     )
     @PostMapping
     @PreAuthorize(CHECK_HAS_USER_RIGHTS)
-    public ResponseEntity<TaskDTO> createTask(@PathVariable long projectId, @RequestBody CreateTaskRequestDTO rq) {
+    public ResponseEntity<TaskDTO> createTask(@PathVariable long projectId, @RequestBody @Valid CreateTaskRequestDTO rq) {
         return ResponseEntity.status(HttpStatus.CREATED).body(tasksService.createTask(projectId, rq));
     }
 

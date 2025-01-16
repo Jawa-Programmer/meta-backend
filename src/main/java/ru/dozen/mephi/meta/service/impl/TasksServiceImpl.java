@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.ThrowableProblem;
@@ -79,7 +80,7 @@ public class TasksServiceImpl implements TasksService {
                 .map(login -> getUserIfMemberOfProject(projectId, login))
                 .toList()).ifPresent(task::setWatchers);
 
-        if (task.getKey() == null) {
+        if (StringUtils.isBlank(task.getKey())) {
             var next = tasksRepository.getMaxKey().orElse(-1) + 1;
             task.setKey("TSK-" + next);
         }

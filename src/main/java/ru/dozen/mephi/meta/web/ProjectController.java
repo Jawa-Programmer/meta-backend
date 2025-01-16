@@ -78,7 +78,7 @@ public class ProjectController {
             }
     )
     @PutMapping("/{projectId}/state")
-    @PreAuthorize(CHECK_IS_PROJECT_DIRECTOR)
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER')")
     public ResponseEntity<ProjectDTO> changeProjectState(
             @PathVariable long projectId,
             @RequestBody @Valid ChangeProjectStateRequestDTO request
@@ -110,7 +110,7 @@ public class ProjectController {
             }
     )
     @GetMapping("/{projectId}/participants")
-    @PreAuthorize(CHECK_IS_MEMBER_OR_DIRECTOR) // @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR) ?
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERUSER') || " + CHECK_IS_PROJECT_DIRECTOR)
     public ResponseEntity<List<ParticipantsDTO>> getParticipants(@PathVariable long projectId) {
         return ResponseEntity.ok(projectService.getParticipants(projectId));
     }
@@ -166,7 +166,6 @@ public class ProjectController {
             @PathVariable long projectId,
             @RequestBody @Valid UpdateRoleRequestDTO request
     ) {
-
         return ResponseEntity.ok(projectService.updateParticipantRole(projectId, request));
     }
 

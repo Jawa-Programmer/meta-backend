@@ -18,6 +18,7 @@ import ru.dozen.mephi.meta.repository.UserRolesRepository;
 import ru.dozen.mephi.meta.repository.UsersRepository;
 import ru.dozen.mephi.meta.service.ProjectService;
 import ru.dozen.mephi.meta.service.mapper.ProjectMapper;
+import ru.dozen.mephi.meta.service.mapper.UserMapper;
 import ru.dozen.mephi.meta.util.AuthoritiesUtils;
 import ru.dozen.mephi.meta.util.FilterUtils;
 import ru.dozen.mephi.meta.util.ProblemUtils;
@@ -37,6 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectsRepository projectsRepository;
     private final ProjectMapper projectMapper;
     private final UsersRepository usersRepository;
+    private final UserMapper userMapper;
     private final UserRolesRepository userRolesRepository;
     private final RoleRecordsRepository roleRecordsRepository;
 
@@ -110,6 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
                             user.getId(),
                             user.getFio(),
                             user.getLogin(),
+                            userMapper.toDto(user),
                             role.getRoleName()
                     );
                 })
@@ -173,6 +176,7 @@ public class ProjectServiceImpl implements ProjectService {
                             user.getId(),
                             user.getFio(),
                             user.getLogin(),
+                            userMapper.toDto(user),
                             role.getRoleName()
                     );
                 })
@@ -204,6 +208,7 @@ public class ProjectServiceImpl implements ProjectService {
                 updatedRoleRecord.getUser().getId(),
                 updatedRoleRecord.getUser().getFio(),
                 updatedRoleRecord.getUser().getLogin(),
+                userMapper.toDto(updatedRoleRecord.getUser()),
                 updatedRoleRecord.getRole().getRoleName());
     }
 
