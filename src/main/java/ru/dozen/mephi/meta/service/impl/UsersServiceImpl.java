@@ -93,6 +93,12 @@ public class UsersServiceImpl implements UsersService {
         Specification<User> specification = Specification.where(FilterUtils.toSpecification(filter));
         var users = usersRepository.findAll(specification);
         var projectId = filter.getProjectId();
+        var role = filter.getHasSystemRole();
+        if (role != null) {
+            users = users.stream()
+                    .filter(u -> u.getSystemRoles().contains(role))
+                    .toList();
+        }
         if (projectId != null) {
             users = users.stream()
                     .filter(u -> AuthoritiesUtils.isMemberOfProject(u, projectId))

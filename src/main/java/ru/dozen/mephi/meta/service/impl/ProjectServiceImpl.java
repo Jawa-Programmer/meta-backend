@@ -166,9 +166,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         project.getRoleRecords().remove(existingRoleRecord);
 
-        roleRecordsRepository.delete(existingRoleRecord);
-
         project = projectsRepository.save(project);
+
+        roleRecordsRepository.deleteById(existingRoleRecord.getId());
 
         return project.getRoleRecords().stream()
                 .map(roleRecord -> {
@@ -204,14 +204,14 @@ public class ProjectServiceImpl implements ProjectService {
 
         existingRoleRecord.setRole(newRole);
 
-        var updatedRoleRecord = roleRecordsRepository.save(existingRoleRecord);
+        projectsRepository.save(project);
 
         return new ParticipantsDTO(
-                updatedRoleRecord.getUser().getId(),
-                updatedRoleRecord.getUser().getFio(),
-                updatedRoleRecord.getUser().getLogin(),
-                userMapper.toDto(updatedRoleRecord.getUser()),
-                updatedRoleRecord.getRole().getRoleName());
+                existingRoleRecord.getUser().getId(),
+                existingRoleRecord.getUser().getFio(),
+                existingRoleRecord.getUser().getLogin(),
+                userMapper.toDto(existingRoleRecord.getUser()),
+                existingRoleRecord.getRole().getRoleName());
     }
 
     @Override
