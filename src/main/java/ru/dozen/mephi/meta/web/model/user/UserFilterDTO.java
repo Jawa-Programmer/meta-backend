@@ -1,6 +1,7 @@
 package ru.dozen.mephi.meta.web.model.user;
 
 import java.io.Serializable;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,5 @@ public class UserFilterDTO implements Serializable {
     @EntityFieldName("userState")
     private Filter<UserState> state;
     private Long projectId;
-    private SystemRole hasSystemRole;
+    private Set<SystemRole> hasAnySystemRole;
 }

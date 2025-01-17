@@ -1,7 +1,6 @@
 package ru.dozen.mephi.meta.service.impl;
 
 import static ru.dozen.mephi.meta.util.ProblemUtils.badRequest;
-import static ru.dozen.mephi.meta.util.ProblemUtils.forbidden;
 import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
 
 import java.util.Comparator;
@@ -68,15 +67,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO changeProjectState(long projectId, ChangeProjectStateRequestDTO request) {
-        var user = AuthoritiesUtils.getCurrentUser();
 
         var project = projectsRepository.findById(projectId).orElseThrow(
                 () -> notFound("Не найден проект " + projectId)
         );
-
-        if (!user.getId().equals(project.getDirector().getId())) {
-            throw forbidden("Текущий пользователь не имеет права менять данный проект");
-        }
 
         project.setProjectState(request.getState());
         projectsRepository.save(project);

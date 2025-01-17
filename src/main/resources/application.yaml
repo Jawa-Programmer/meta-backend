@@ -22,3 +22,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+atms-client:
+  get-task-test-status-endpoint: ${atms-client.host}/public/tasks/{taskId}/status

@@ -1,5 +1,7 @@
 package ru.dozen.mephi.meta.client;
 
+import ru.dozen.mephi.meta.client.model.TestStatusResponseDTO;
+
 /**
  * Клиент взаимодействия с внешней АСУТ
  */
@@ -11,5 +13,5 @@ public interface AutomatedTestManagementSystemClient {
      * @param taskId идентификатор задачи
      * @return статус тестирования задачи
      */
-    String getTaskTestStatus(long taskId);
+    TestStatusResponseDTO getTaskTestStatus(long taskId);
 }

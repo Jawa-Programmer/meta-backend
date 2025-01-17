@@ -1,3 +1,8 @@
 spring:
   jpa:
     show-sql: false
+atms-client:
+  host: http://localhost:${wiremock.server.port}
+  get-task-test-status-endpoint: ${atms-client.host}/public/tasks/{taskId}/status
+  auth-token: some-token
+

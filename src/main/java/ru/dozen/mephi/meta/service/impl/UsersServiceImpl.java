@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import ru.dozen.mephi.meta.domain.User;
 import ru.dozen.mephi.meta.domain.enums.SystemRole;
 import ru.dozen.mephi.meta.repository.UsersRepository;
@@ -93,10 +94,10 @@ public class UsersServiceImpl implements UsersService {
         Specification<User> specification = Specification.where(FilterUtils.toSpecification(filter));
         var users = usersRepository.findAll(specification);
         var projectId = filter.getProjectId();
-        var role = filter.getHasSystemRole();
-        if (role != null) {
+        var roles = filter.getHasAnySystemRole();
+        if (roles != null && !roles.isEmpty()) {
             users = users.stream()
-                    .filter(u -> u.getSystemRoles().contains(role))
+                    .filter(u -> CollectionUtils.containsAny(u.getSystemRoles(), roles))
                     .toList();
         }
         if (projectId != null) {

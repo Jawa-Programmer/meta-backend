@@ -34,7 +34,6 @@ public class TaskDTO implements Serializable {
 
     private TaskState taskState;
 
-    // TODO: заменить на Enum или класс, когда спишемся с АСУТ
     private String testStatus;
 
     private List<CommentDTO> comments;

@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.ResourceUtils;
 
-@SpringBootTest
+@AutoConfigureWireMock(port = 0)
 @ContextConfiguration(initializers = TestContainersInitializer.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AbstractTest {
 
     @Autowired

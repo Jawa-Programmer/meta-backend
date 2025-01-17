@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import ru.dozen.mephi.meta.web.model.task.TaskShortInfoDTO;
 import ru.dozen.mephi.meta.web.model.task.UpdateTaskRequestDTO;
 import ru.dozen.mephi.meta.web.model.user.UserDTO;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TasksServiceImpl implements TasksService {
@@ -44,7 +46,14 @@ public class TasksServiceImpl implements TasksService {
     private final AutomatedTestManagementSystemClient atmsClient;
 
     private TaskDTO fillTestStatus(TaskDTO taskDTO) {
-        taskDTO.setTestStatus(atmsClient.getTaskTestStatus(taskDTO.getId()));
+
+        String status = null;
+        try {
+            status = atmsClient.getTaskTestStatus(taskDTO.getId()).getStatus().getDescription();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        taskDTO.setTestStatus(status);
         return taskDTO;
     }
 

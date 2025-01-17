@@ -1,5 +1,8 @@
 package ru.dozen.mephi.meta.web;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -9,14 +12,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.dozen.mephi.meta.AbstractIntegrationTest;
-import ru.dozen.mephi.meta.client.AutomatedTestManagementSystemClient;
+import ru.dozen.mephi.meta.client.model.TestStatus;
+import ru.dozen.mephi.meta.client.model.TestStatusResponseDTO;
+import ru.dozen.mephi.meta.client.model.TestType;
 import ru.dozen.mephi.meta.domain.Project;
 import ru.dozen.mephi.meta.domain.RoleRecord;
 import ru.dozen.mephi.meta.domain.Task;
@@ -34,10 +41,8 @@ import ru.dozen.mephi.meta.web.model.user.UserDTO;
 
 class TaskControllerTest extends AbstractIntegrationTest {
 
-    @MockitoBean
-    private AutomatedTestManagementSystemClient atmsClient;
-
     private Long MOCK_PROJECT_ID;
+    private Long MOCK_TASK_ID;
 
     @BeforeEach
     void setUpBaseMocks() {
@@ -67,17 +72,48 @@ class TaskControllerTest extends AbstractIntegrationTest {
         var task = new Task(null, "TSK-1", "Title", "Description", true,
                 user1, user2, project, TaskState.NEW, new ArrayList<>(), new ArrayList<>());
 
-        tasksRepository.save(task);
+        MOCK_TASK_ID = tasksRepository.save(task).getId();
 
         MOCK_PROJECT_ID = project.getId();
     }
 
-    @Test
-    void getTaskByKey() throws Exception {
+    @ParameterizedTest
+    @EnumSource(TestStatus.class)
+    void getTaskByKey(TestStatus status) throws Exception {
+        var testStatus = TestStatusResponseDTO.builder()
+                .taskId(MOCK_TASK_ID)
+                .testType(TestType.TEST_CASE)
+                .status(status)
+                .build();
+
+        stubFor(WireMock.get(urlEqualTo("/public/tasks/" + MOCK_TASK_ID + "/status"))
+                .withHeader("Authorization", WireMock.equalTo("Bearer some-token"))
+                .willReturn(
+                        aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody(objectMapper.writeValueAsString(testStatus))
+                )
+        );
+
         mockMvc.perform(get("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
                         .headers(auth("user1", "password")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Title"));
+                .andExpect(jsonPath("$.title").value("Title"))
+                .andExpect(jsonPath("$.testStatus").value(status.getDescription()));
+    }
+
+    @Test
+    void getTaskByKey_externalError() throws Exception {
+        stubFor(WireMock.get(urlEqualTo("/public/tasks/" + MOCK_TASK_ID + "/status"))
+                .withHeader("Authorization", WireMock.equalTo("Bearer some-token"))
+                .willReturn(aResponse().withStatus(404)));
+
+        mockMvc.perform(get("/projects/" + MOCK_PROJECT_ID + "/tasks/TSK-1")
+                        .headers(auth("user1", "password")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Title"))
+                .andExpect(jsonPath("$.testStatus").isEmpty());
     }
 
     @Test
