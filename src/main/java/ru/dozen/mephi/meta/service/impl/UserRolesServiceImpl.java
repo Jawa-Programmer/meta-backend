@@ -30,7 +30,7 @@ public class UserRolesServiceImpl implements UserRolesService {
     @Override
     public UserRoleDTO updateUserRole(UserRoleDTO userRole) {
         var entity = userRolesRepository.findById(userRole.getId())
-                .orElseThrow(() -> ProblemUtils.notFound("Not found role with id " + userRole.getId()));
+                .orElseThrow(() -> ProblemUtils.notFound("Не найдена роль с id " + userRole.getId()));
         userRoleMapper.updateUserRole(entity, userRole);
         return userRoleMapper.toDto(userRolesRepository.save(entity));
     }
@@ -40,7 +40,7 @@ public class UserRolesServiceImpl implements UserRolesService {
         try {
             userRolesRepository.deleteById(id);
         } catch (Exception e) {
-            throw ProblemUtils.badRequest("Cannot delete user role with id " + id);
+            throw ProblemUtils.badRequest("Не удается удалить роль " + id + ". Убедитесь, что нет ни одного пользователя с данной ролью");
         }
     }
 }

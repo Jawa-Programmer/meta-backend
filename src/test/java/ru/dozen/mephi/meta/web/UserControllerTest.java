@@ -186,7 +186,7 @@ class UserControllerTest extends AbstractIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rq)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.detail").value("Only superuser can assign or edit administrator"));
+                .andExpect(jsonPath("$.detail").value("Текущий пользователь не имеет прав создавать, назначать или редактировать администраторов"));
 
         assertCantAuth("some_admin", "some_password");
     }
@@ -207,7 +207,7 @@ class UserControllerTest extends AbstractIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(rq)))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.detail").value("Assigning and editing superusers are forbidden"));
+                .andExpect(jsonPath("$.detail").value("Создание, назначение и редактирование суперпользователей запрещено"));
 
         assertCantAuth("some_admin", "some_password");
     }

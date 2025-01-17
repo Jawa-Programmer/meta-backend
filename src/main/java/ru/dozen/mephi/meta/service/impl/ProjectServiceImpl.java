@@ -1,8 +1,9 @@
 package ru.dozen.mephi.meta.service.impl;
 
+import static ru.dozen.mephi.meta.util.ProblemUtils.badRequest;
+import static ru.dozen.mephi.meta.util.ProblemUtils.forbidden;
 import static ru.dozen.mephi.meta.util.ProblemUtils.notFound;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,6 @@ import ru.dozen.mephi.meta.service.mapper.ProjectMapper;
 import ru.dozen.mephi.meta.service.mapper.UserMapper;
 import ru.dozen.mephi.meta.util.AuthoritiesUtils;
 import ru.dozen.mephi.meta.util.FilterUtils;
-import ru.dozen.mephi.meta.util.ProblemUtils;
 import ru.dozen.mephi.meta.web.model.project.AssignRemoveParticipantRequestDTO;
 import ru.dozen.mephi.meta.web.model.project.ChangeProjectStateRequestDTO;
 import ru.dozen.mephi.meta.web.model.project.CreateProjectRequestDTO;
@@ -62,7 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             return projectMapper.toDto(projectsRepository.save(project));
         } catch (DataIntegrityViolationException e) {
-            throw ProblemUtils.badRequest("Project with title: " + project.getTitle() + " already exists");
+            throw badRequest("Проект с названием \"" + project.getTitle() + "\" уже существует");
         }
     }
 
@@ -71,11 +71,11 @@ public class ProjectServiceImpl implements ProjectService {
         var user = AuthoritiesUtils.getCurrentUser();
 
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Project with ID " + projectId + " not found")
+                () -> notFound("Не найден проект " + projectId)
         );
 
         if (!user.getId().equals(project.getDirector().getId())) {
-            throw new SecurityException("You do not have permission to change the state of this project");
+            throw forbidden("Текущий пользователь не имеет права менять данный проект");
         }
 
         project.setProjectState(request.getState());
@@ -87,7 +87,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO updateProject(long projectId, CreateProjectRequestDTO request) {
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Project with ID " + projectId + " not found"));
+                () -> notFound("Не найден проект " + projectId)
+        );
 
         projectMapper.updateProject(project, request);
 
@@ -102,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ParticipantsDTO> getParticipants(long projectId) {
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Project with ID " + projectId + " not found")
+                () -> notFound("Не найден проект " + projectId)
         );
 
         return project.getRoleRecords().stream()
@@ -123,21 +124,21 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO assignParticipant(long projectId, AssignRemoveParticipantRequestDTO request) {
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Проект с ID " + projectId + " не найден")
+                () -> notFound("Не найден проект " + projectId)
         );
 
         var user = usersRepository.findById(request.getUserId()).orElseThrow(
-                () -> new EntityNotFoundException("Пользователь с ID " + request.getUserId() + " не найден")
+                () -> notFound("Пользователь с ID " + request.getUserId() + " не найден")
         );
 
         var userRole = userRolesRepository.findById(request.getRoleId()).orElseThrow(
-                () -> new EntityNotFoundException("Роль с ID " + request.getRoleId() + " не найдена")
+                () -> notFound("Роль с ID " + request.getRoleId() + " не найдена")
         );
 
         boolean alreadyExists = project.getRoleRecords().stream()
                 .anyMatch(roleRecord -> roleRecord.getUser().equals(user) && roleRecord.getRole().equals(userRole));
         if (alreadyExists) {
-            throw new IllegalArgumentException("Пользователь уже назначен с данной ролью в проекте");
+            throw badRequest("Пользователь уже назначен с данной ролью в проекте");
         }
 
         RoleRecord roleRecord = new RoleRecord();
@@ -153,7 +154,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ParticipantsDTO> removeParticipant(long projectId, AssignRemoveParticipantRequestDTO request) {
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Проект с ID " + projectId + " не найден")
+                () -> notFound("Проект с ID " + projectId + " не найден")
         );
 
         var existingRoleRecord = project.getRoleRecords().stream()
@@ -161,7 +162,7 @@ public class ProjectServiceImpl implements ProjectService {
                         roleRecord.getUser().getId().equals(request.getUserId()) &&
                                 roleRecord.getRole().getId().equals(request.getRoleId()))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Участник с указанным ролью и ID в проекте не найден"));
+                .orElseThrow(() -> notFound("Участник с указанным ролью и ID в проекте не найден"));
 
         project.getRoleRecords().remove(existingRoleRecord);
 
@@ -187,7 +188,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ParticipantsDTO updateParticipantRole(long projectId, UpdateRoleRequestDTO request) {
         var project = projectsRepository.findById(projectId).orElseThrow(
-                () -> new EntityNotFoundException("Проект с ID " + projectId + " не найден")
+                () -> notFound("Проект с ID " + projectId + " не найден")
         );
 
         var existingRoleRecord = project.getRoleRecords().stream()
@@ -195,10 +196,10 @@ public class ProjectServiceImpl implements ProjectService {
                         roleRecord.getUser().getId().equals(request.getUserId()) &&
                                 roleRecord.getRole().getId().equals(request.getOldRoleId()))
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Участник с указанной ролью в проекте не найден"));
+                .orElseThrow(() -> notFound("Участник с указанной ролью в проекте не найден"));
 
         var newRole = userRolesRepository.findById(request.getNewRoleId()).orElseThrow(
-                () -> new EntityNotFoundException("Роль с ID " + request.getNewRoleId() + " не найдена")
+                () -> notFound("Роль с ID " + request.getNewRoleId() + " не найдена")
         );
 
         existingRoleRecord.setRole(newRole);
@@ -228,10 +229,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     private Project getProjectById(Long id) {
         return projectsRepository.findById(id).orElseThrow(
-                () -> notFound("No project found with id: " + id));
+                () -> notFound("Не найден проект " + id));
     }
 
     private User getUser(String login) {
-        return usersRepository.findByLogin(login).orElseThrow(() -> notFound("No user found with login: " + login));
+        return usersRepository.findByLogin(login)
+                .orElseThrow(() -> notFound("Не найден пользователь с логином " + login));
     }
 }

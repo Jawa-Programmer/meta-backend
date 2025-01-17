@@ -1,5 +1,7 @@
 package ru.dozen.mephi.meta.service.impl;
 
+import static ru.dozen.mephi.meta.util.ProblemUtils.badRequest;
+
 import java.util.EnumSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,10 +41,10 @@ public class UsersServiceImpl implements UsersService {
             return;
         }
         if (roles.contains(SystemRole.SUPERUSER)) {
-            throw ProblemUtils.forbidden("Assigning and editing superusers are forbidden");
+            throw ProblemUtils.forbidden("Создание, назначение и редактирование суперпользователей запрещено");
         }
         if (roles.contains(SystemRole.ADMIN) && !AuthoritiesUtils.isSuperUser()) {
-            throw ProblemUtils.forbidden("Only superuser can assign or edit administrator");
+            throw ProblemUtils.forbidden("Текущий пользователь не имеет прав создавать, назначать или редактировать администраторов");
         }
     }
 
@@ -61,7 +63,7 @@ public class UsersServiceImpl implements UsersService {
         try {
             return userMapper.toDto(usersRepository.save(user));
         } catch (DataIntegrityViolationException e) {
-            throw ProblemUtils.badRequest("Login already exists");
+            throw badRequest("Пользователь с данным логином уже существует");
         }
     }
 

@@ -49,18 +49,18 @@ public class TasksServiceImpl implements TasksService {
 
     private Task getByProjectIdAndKey(Long projectId, String key) {
         return tasksRepository.findByProjectIdAndKey(projectId, key).orElseThrow(
-                () -> notFound("No task found with key: " + key + " in project " + projectId));
+                () -> notFound("Не найдена задача с ключом " + key + " в проекте " + projectId));
     }
 
     private ThrowableProblem notFoundUser(String login) {
-        return notFound("No user found with login: " + login);
+        return notFound("Не найден пользователь с логином " + login);
     }
 
     private User getUserIfMemberOfProject(long projectId, String login) {
         var user = usersRepository.findByLogin(login)
                 .orElseThrow(() -> notFoundUser(login));
         if (!AuthoritiesUtils.isMemberOfProject(user, projectId)) {
-            throw badRequest("Specified user " + user.getLogin() + " is not member of project " + projectId);
+            throw badRequest("Пользователь " + user.getLogin() + " не является участником проекта " + projectId);
         }
         return user;
     }
@@ -74,7 +74,7 @@ public class TasksServiceImpl implements TasksService {
         } else {
             key = key.toUpperCase();
             if (tasksRepository.existsByKey(key)) {
-                throw badRequest("Key " + key + " already exists");
+                throw badRequest("Ключ " + key + " уже занят");
             }
         }
         Task task = taskMapper.fromCreateRequest(rq);
@@ -107,7 +107,7 @@ public class TasksServiceImpl implements TasksService {
         var task = getByProjectIdAndKey(projectId, key);
         var user = AuthoritiesUtils.getCurrentUser();
         if (!Objects.equals(task.getAuthor().getLogin(), user.getLogin())) {
-            throw forbidden("User " + user.getLogin() + " does not have permission to update task");
+            throw forbidden("Текущий пользователь не имеет прав менять данную задачу");
         }
 
         taskMapper.updateTask(task, rq);
@@ -126,7 +126,7 @@ public class TasksServiceImpl implements TasksService {
         var user = AuthoritiesUtils.getCurrentUser();
         if (!(task.getAuthor().getLogin().equals(user.getLogin()) ||
               task.getExecutor().getLogin().equals(user.getLogin()))) {
-            throw forbidden("User " + user.getLogin() + " does not have permission to change task's state");
+            throw forbidden("Текущий пользователь не имеет прав менять данную задачу");
         }
         task.setTaskState(rq.getState());
         return fillTestStatus(taskMapper.toDto(tasksRepository.save(task)));
@@ -165,11 +165,12 @@ public class TasksServiceImpl implements TasksService {
     public TaskDTO addWatcher(long projectId, String key, UserDTO watcher) {
         var task = getByProjectIdAndKey(projectId, key);
         var user = usersRepository.findByLogin(watcher.getLogin()).orElseThrow(() -> notFoundUser(watcher.getLogin()));
+        var current = AuthoritiesUtils.getCurrentUser();
 
-        if (!(task.getAuthor().getLogin().equals(user.getLogin()) ||
-              task.getExecutor().getLogin().equals(user.getLogin()) ||
-              AuthoritiesUtils.getCurrentUser().getLogin().equals(user.getLogin()))) {
-            throw forbidden("Does not have permission to add this watcher to this task");
+        if (!(task.getAuthor().getLogin().equals(current.getLogin()) ||
+              task.getExecutor().getLogin().equals(current.getLogin()) ||
+              current.getLogin().equals(user.getLogin()))) {
+            throw forbidden("Текущий пользователь не имеет права добавить данного наблюдателя в данную задачу");
         }
 
         var watchers = task.getWatchers();
@@ -183,10 +184,11 @@ public class TasksServiceImpl implements TasksService {
     @Override
     public TaskDTO removeWatcher(long projectId, String key, UserDTO watcher) {
         var task = getByProjectIdAndKey(projectId, key);
-        if (!(task.getAuthor().getLogin().equals(watcher.getLogin()) ||
-              task.getExecutor().getLogin().equals(watcher.getLogin()) ||
-              AuthoritiesUtils.getCurrentUser().getLogin().equals(watcher.getLogin()))) {
-            throw forbidden("Does not have permission to add this watcher to this task");
+        var current = AuthoritiesUtils.getCurrentUser();
+        if (!(task.getAuthor().getLogin().equals(current.getLogin()) ||
+              task.getExecutor().getLogin().equals(current.getLogin()) ||
+              current.getLogin().equals(watcher.getLogin()))) {
+            throw forbidden("Текущий пользователь не имеет права удалить данного наблюдателя из данной задачи");
         }
         var isChanged = task.getWatchers().removeIf(user -> user.getLogin().equals(watcher.getLogin()));
         if (isChanged) {

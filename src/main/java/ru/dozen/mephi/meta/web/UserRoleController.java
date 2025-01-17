@@ -83,7 +83,7 @@ public class UserRoleController {
     @PutMapping
     public ResponseEntity<UserRoleDTO> updateUserRole(@RequestBody UserRoleDTO userRoleDTO) {
         if (userRoleDTO.getId() == null) {
-            throw ProblemUtils.badRequest("Id is required");
+            throw ProblemUtils.badRequest("Id является обязательным полем");
         }
         return ResponseEntity.ok(userRolesService.updateUserRole(userRoleDTO));
     }
