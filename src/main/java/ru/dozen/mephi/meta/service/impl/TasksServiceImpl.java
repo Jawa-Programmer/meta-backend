@@ -46,7 +46,7 @@ public class TasksServiceImpl implements TasksService {
     private final AutomatedTestManagementSystemClient atmsClient;
 
     private TaskDTO fillTestStatus(TaskDTO taskDTO) {
-        if (!taskDTO.getIsTestingRequired()) {
+        if (!Boolean.TRUE.equals(taskDTO.getIsTestingRequired())) {
             return taskDTO;
         }
         String status = null;
