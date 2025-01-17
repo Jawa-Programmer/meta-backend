@@ -16,6 +16,7 @@ import ru.dozen.mephi.meta.client.AutomatedTestManagementSystemClient;
 import ru.dozen.mephi.meta.domain.Comment;
 import ru.dozen.mephi.meta.domain.Task;
 import ru.dozen.mephi.meta.domain.User;
+import ru.dozen.mephi.meta.domain.enums.UserState;
 import ru.dozen.mephi.meta.repository.ProjectsRepository;
 import ru.dozen.mephi.meta.repository.TasksRepository;
 import ru.dozen.mephi.meta.repository.UsersRepository;
@@ -59,6 +60,9 @@ public class TasksServiceImpl implements TasksService {
     private User getUserIfMemberOfProject(long projectId, String login) {
         var user = usersRepository.findByLogin(login)
                 .orElseThrow(() -> notFoundUser(login));
+        if (user.getUserState() == UserState.BLOCKED) {
+            throw badRequest( "Пользователь "+user.getLogin()+" заблокирован и не может быть назначен наблюдателем");
+        }
         if (!AuthoritiesUtils.isMemberOfProject(user, projectId)) {
             throw badRequest("Пользователь " + user.getLogin() + " не является участником проекта " + projectId);
         }
@@ -172,8 +176,11 @@ public class TasksServiceImpl implements TasksService {
               current.getLogin().equals(user.getLogin()))) {
             throw forbidden("Текущий пользователь не имеет права добавить данного наблюдателя в данную задачу");
         }
+        if (user.getUserState() == UserState.BLOCKED) {
+            throw badRequest( "Пользователь "+user.getLogin()+" заблокирован и не может быть назначен наблюдателем");
+        }
         if (!AuthoritiesUtils.isMemberOfProject(user, projectId)) {
-            throw badRequest( "Данный пользователь не является участником проекта и не может быть назначен наблюдателем");
+            throw badRequest( "Пользователь "+user.getLogin()+" не является участником проекта и не может быть назначен наблюдателем");
         }
 
         var watchers = task.getWatchers();
