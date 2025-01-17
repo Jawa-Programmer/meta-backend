@@ -172,11 +172,16 @@ public class TasksServiceImpl implements TasksService {
               current.getLogin().equals(user.getLogin()))) {
             throw forbidden("Текущий пользователь не имеет права добавить данного наблюдателя в данную задачу");
         }
+        if (!AuthoritiesUtils.isMemberOfProject(user, projectId)) {
+            throw badRequest( "Данный пользователь не является участником проекта и не может быть назначен наблюдателем");
+        }
 
         var watchers = task.getWatchers();
-        if (watchers.stream().noneMatch(u -> u.getLogin().equals(watcher.getLogin()))) {
+        if (watchers.stream().noneMatch(u -> u.getId().equals(user.getId()))) {
             watchers.add(user);
             task = tasksRepository.save(task);
+        } else {
+            throw badRequest("Данный пользователь уже является наблюдателем в данной задаче");
         }
         return fillTestStatus(taskMapper.toDto(task));
     }
